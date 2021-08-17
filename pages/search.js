@@ -3,8 +3,9 @@ import { format } from 'date-fns';
 import { useRouter } from 'next/dist/client/router';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
+import InfoCard from '../components/InfoCard';
 
-export default function Search() {
+export default function Search({ searchResults }) {
   const router = useRouter();
   const { location, startDate, endDate, noOfGuests } = router.query;
 
@@ -33,9 +34,23 @@ export default function Search() {
             <p className='button'>Rooms and Beds</p>
             <p className='button'>More filters</p>
           </div>
+
+          <div className='flex flex-col'>
+            {searchResults?.map((item, i) => (
+              <InfoCard key={i} {...item} />
+            ))}
+          </div>
         </section>
       </main>
       <Footer />
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  const searchResults = await fetch('https://jsonkeeper.com/b/5NPS').then(res =>
+    res.json()
+  );
+
+  return { props: { searchResults } };
 }
